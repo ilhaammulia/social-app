@@ -1,18 +1,32 @@
 import { createBrowserRouter } from 'react-router'
-import React from 'react'
+
+import MainLayout from '@/components/layout/MainLayout'
+import ProtectedRoute from '@/components/shared/ProtectedRoute'
 
 import Login from '@/pages/Auth/Login'
 import Register from '@/pages/Auth/Register'
+import Home from '@/pages/Home'
 
 const router = createBrowserRouter([
     {
-        path: "/auth/login",
-        element: React.createElement(Login),
-    },
-    {
-        path: "/auth/register",
-        element: React.createElement(Register),
-    },
+        path: "/",
+        Component: MainLayout,
+        children: [
+            {
+                Component: ProtectedRoute,
+                children: [
+                    { index: true, Component: Home },
+                ],
+            },
+            {
+                path: "auth",
+                children: [
+                    { path: "login", Component: Login },
+                    { path: "register", Component: Register },
+                ],
+            },
+        ]
+    }
 ]);
 
 export default router
