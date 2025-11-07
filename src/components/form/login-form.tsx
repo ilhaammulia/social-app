@@ -10,10 +10,22 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { NavLink } from "react-router"
+import { useForm } from "react-hook-form"
+import type { LoginFormData, ApiError } from "@/types"
 
-export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
+interface LoginFormProps {
+  className?: string;
+  onSubmit: (data: LoginFormData) => void;
+  isLoading?: boolean;
+  error?: ApiError;
+}
+
+export function LoginForm({ className, onSubmit, isLoading, error }: LoginFormProps) {
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>();
+
+
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
@@ -22,30 +34,57 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
+              {error && (
+                <p className="text-red-500 text-sm">
+                  {error.message}
+                </p>
+              )}
               <div className="grid gap-2">
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
                   type="text"
-                  placeholder="johndoe"
-                  required
+                  placeholder="Username"
+                  {...register('username', {
+                    required: 'Username is required',
+                    pattern: {
+                      value: /^[a-zA-Z0-9_]+$/,
+                      message: 'Invalid username',
+                    },
+                  })}
                 />
+                {errors.username && (
+                  <p className="text-red-500 text-sm">
+                    {errors.username.message}
+                  </p>
+                )}
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Password"
+                  required
+                  {...register('password', {
+                    required: 'Password is required',
+                    minLength: {
+                      value: 6,
+                      message: 'Password must be at least 6 characters',
+                    },
+                  })}
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 Login
               </Button>
             </div>
