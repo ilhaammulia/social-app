@@ -18,16 +18,19 @@ const PostCard: React.FC<PostCardProps> = ({
     onComment,
 }) => {
     const { user, setUser } = useAuth()
-    const [isLiked, setIsLiked] = useState(post.isLiked)
-    const [isFollowed, setIsFollowed] = useState(post.isFollowed)
+    const [isLiked, setIsLiked] = useState(post.is_liked)
+    const [isFollowed, setIsFollowed] = useState(post.user.is_followed)
+    const [likesCount, setLikesCount] = useState(post.likes_count || 0)
 
     const handleLike = async (postId: string) => {
         if (isLiked) {
             await postService.unlikePost(postId)
             setIsLiked(false)
+            setLikesCount(likesCount - 1)
         } else {
             await postService.likePost(postId)
             setIsLiked(true)
+            setLikesCount(likesCount + 1)
         }
     }
 
@@ -119,7 +122,7 @@ const PostCard: React.FC<PostCardProps> = ({
                             <div className="p-2 rounded-full group-hover:bg-red-50 transition-colors duration-200">
                                 <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
                             </div>
-                            <span className="text-[13px]">{post.likes_count || 0}</span>
+                            <span className="text-[13px]">{likesCount}</span>
                         </button>
                     </div>
                 </div>

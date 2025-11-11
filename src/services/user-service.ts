@@ -28,7 +28,7 @@ export const userService = {
     },
 
     unfollowUser: async (userId: string): Promise<UserResponse> => {
-        const response = await client.post<UserResponse>(`/follows/${userId}`);
+        const response = await client.delete<UserResponse>(`/follows/${userId}`);
         return response.data;
     },
 }

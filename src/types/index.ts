@@ -8,9 +8,9 @@ export interface Post {
         id: string;
         username: string;
         avatar: string;
+        is_followed: boolean;
     };
-    isLiked?: boolean;
-    isFollowed?: boolean;
+    is_liked: boolean;
     created_at?: Date;
 }
 
