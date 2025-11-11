@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Heart, MessageCircle, UserIcon } from 'lucide-react'
+import { Heart, MessageCircle } from 'lucide-react'
 import type { Post } from '@/types'
 import { postService } from '@/services/post-service';
 import { userService } from '@/services/user-service';

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { UserIcon } from 'lucide-react'
 import { userService } from '@/services/user-service';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
