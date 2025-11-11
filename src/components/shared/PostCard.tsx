@@ -65,9 +65,7 @@ const PostCard: React.FC<PostCardProps> = ({
                 <div className="flex-shrink-0">
                     <Avatar>
                         <AvatarImage src={post.user?.avatar || ''} alt={post.user?.username || 'User'} />  
-                        <AvatarFallback>
-                            <UserIcon className="w-4 h-4" />
-                        </AvatarFallback>
+                        <AvatarFallback>{post.user?.username?.[0].toUpperCase() || 'U'}</AvatarFallback>
                     </Avatar>
                 </div>
 

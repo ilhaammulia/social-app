@@ -7,6 +7,11 @@ export const postService = {
         return response.data
     },
 
+    getPostById: async (postId: string): Promise<PostResponse> => {
+        const response = await client.get<PostResponse>(`/posts/${postId}`)
+        return response.data
+    },
+
     searchPosts: async (query: string): Promise<PostResponse> => {
         const response = await client.get<PostResponse>(`/posts/search?q=${query}`)
         return response.data

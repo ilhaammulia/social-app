@@ -8,6 +8,7 @@ import PostCard from "@/components/shared/PostCard"
 import { useEffect, useState } from "react"
 import { postService } from "@/services/post-service"
 import { useAuth } from "@/hooks/useAuth"
+import CommentCard from "@/components/shared/CommentCard"
 
 interface CommentPostCardProps {
     post: Post | null;
@@ -18,9 +19,23 @@ interface CommentPostCardProps {
 
 function CommentPostCard({ post, isOpen, onClose }: CommentPostCardProps) {
     const { user } = useAuth()
+    const [currentPost, setCurrentPost] = useState<Post | null>(null)
     const [commentContent, setCommentContent] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [comments, setComments] = useState<Comment[]>([])
+
+    const getPostById = async (postId: string) => {
+        if (!postId) return
+        setIsLoading(true)
+        try {
+            const response = await postService.getPostById(postId)
+            setCurrentPost(response.data as Post)
+        } catch (err) {
+            console.error("Error fetching post:", err)
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     const getComments = async () => {
         if (!post) return
@@ -34,7 +49,6 @@ function CommentPostCard({ post, isOpen, onClose }: CommentPostCardProps) {
                     user: comment.user,
                 }
             })
-            console.log(commentsWithUser)
             setComments(commentsWithUser)
         } catch (err) {
             console.error("Error fetching comments:", err)
@@ -44,8 +58,12 @@ function CommentPostCard({ post, isOpen, onClose }: CommentPostCardProps) {
     }
 
     useEffect(() => {
+        if (post?.id) {
+            getPostById(post.id)
+            console.log(currentPost)
+        }
         getComments()
-    }, [post?.id])  
+    }, [post?.id])
 
     const handleSubmit = async () => {
         if (!post || commentContent.trim() === "") return
@@ -80,11 +98,11 @@ function CommentPostCard({ post, isOpen, onClose }: CommentPostCardProps) {
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="flex-shrink-0 pb-4">
-                    {post && <PostCard post={post} />}
+                <div className="flex-shrink-0">
+                    {currentPost && <PostCard post={currentPost} />}
                 </div>
 
-                <div className="flex-1 overflow-y-auto space-y-4 py-4">
+                <div className="flex-1 overflow-y-auto space-y-4">
                     {isLoading ? (
                         <div className="text-center text-gray-500">Loading comments...</div>
                     ) : comments.length === 0 ? (
@@ -93,12 +111,12 @@ function CommentPostCard({ post, isOpen, onClose }: CommentPostCardProps) {
                         </div>
                     ) : (
                         comments.map((comment) => (
-                            <PostCard key={comment.id} post={comment as Post} />
+                            <CommentCard key={comment.id} comment={comment} />
                         ))
                     )}
                 </div>
 
-                <div className="flex-shrink-0 border-t border-gray-200 pt-4">
+                <div className="flex-shrink-0 pt-4">
                     <div className="flex items-start space-x-3">
                         <Avatar className="h-8 w-8 flex-shrink-0">
                             <AvatarImage src={user?.avatar || ''} />

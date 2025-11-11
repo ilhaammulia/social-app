@@ -17,15 +17,14 @@ export interface Post {
 export interface Comment {
     id: string;
     body: string;
-    content?: string;
-    user?: {
+    user: {
         id: string;
         username: string;
         avatar: string;
+        is_followed: boolean;
     };
-    userId: string;
     post: Post;
-    created_at?: Date;
+    created_at: Date;
 }
 
 export interface User {
@@ -68,7 +67,7 @@ export interface UserResponse extends Response{
 
 
 export interface PostResponse extends Response {
-    data: Post[]
+    data: Post[] | Post;
 }
 
 export interface CommentResponse extends Response {
