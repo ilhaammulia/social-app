@@ -12,6 +12,11 @@ export const userService = {
         return response.data;
     },
 
+    getUserByUsername: async (username: string): Promise<UserResponse> => {
+        const response = await client.get<UserResponse>(`/users/username/${username}`);
+        return response.data;
+    },
+
     updateUser: async (userData: Partial<User> & { avatarFile?: File }): Promise<UserResponse> => {
         const response = await client.put<UserResponse>(`/profile`, {
             ...userData,

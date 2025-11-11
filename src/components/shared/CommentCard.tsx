@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { authService } from '@/services/auth-service';
 import type { Comment } from '@/types';
+import { processAvatarUrl } from '@/lib/utils';
 
 interface CommentCardProps {
     comment: Comment;
@@ -47,7 +48,7 @@ const CommentCard: React.FC<CommentCardProps> = ({
             <div className="flex items-start space-x-3">
                 <div className="flex-shrink-0">
                     <Avatar>
-                        <AvatarImage src={comment.user?.avatar || ''} alt={comment.user?.username || 'User'} />  
+                        <AvatarImage src={processAvatarUrl(comment.user?.avatar || '')} alt={comment.user?.username || 'User'} />  
                         <AvatarFallback>{comment.user?.username?.[0].toUpperCase() || 'U'}</AvatarFallback>
                     </Avatar>
                 </div>

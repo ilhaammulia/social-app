@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/shared/ProtectedRoute'
 import Login from '@/pages/Auth/Login'
 import Register from '@/pages/Auth/Register'
 import Home from '@/pages/Home'
+import UserPage from '@/pages/User'
 
 const router = createBrowserRouter([
     {
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
                 Component: ProtectedRoute,
                 children: [
                     { index: true, Component: Home },
+                    { path: "user/:username", Component: UserPage },
                 ],
             },
             {

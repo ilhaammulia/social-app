@@ -8,15 +8,18 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { authService } from '@/services/auth-service';
 import { processAvatarUrl } from '@/lib/utils';
+import { NavLink } from 'react-router';
 
 interface PostCardProps {
     post: Post;
     onComment?: () => void;
+    showFollowButton?: boolean;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
     post,
     onComment,
+    showFollowButton = true,
 }) => {
     const { user, setUser } = useAuth()
     const [isLiked, setIsLiked] = useState(post.is_liked)
@@ -73,15 +76,15 @@ const PostCard: React.FC<PostCardProps> = ({
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2 mb-1">
-                            <span className="font-semibold text-gray-900 text-[15px] leading-5 hover:underline">
+                            <NavLink to={`/user/${post.user?.username || 'anonymouse'}`} className="font-semibold text-gray-900 text-[15px] leading-5 hover:underline">
                                 @{post.user?.username || 'anonymouse'}
-                            </span>
+                            </NavLink>
                             <span className="text-gray-500">·</span>
                             <span className="text-gray-500 text-[15px]">
                                 {post.created_at ? new Date(post.created_at).toLocaleString() : new Date().toLocaleString()}
                             </span>
                         </div>
-                        {String(post.user?.id) !== String(user?.id) && (
+                        {showFollowButton && String(post.user?.id) !== String(user?.id) && (
                             <Button className="text-xs rounded-full px-4" variant={`${isFollowed ? "outline" : "default"}`} onClick={() => handleFollow(post.user?.id || '')}>
                                 {isFollowed ? 'Unfollow' : 'Follow'}
                             </Button>
