@@ -28,11 +28,11 @@ export interface Comment {
 }
 
 export interface User {
-    id: number;
+    id: string;
     username: string;
     email: string;
+    bio?: string;
     avatar: string;
-    bio: string;
     followers: number;
     following: number;
     created_at?: Date;

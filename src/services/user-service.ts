@@ -1,5 +1,5 @@
 import { client } from '@/services/api'
-import type { PostResponse, UserResponse } from '@/types'
+import type { PostResponse, User, UserResponse } from '@/types'
 
 export const userService = {
     getUsers: async (params: { limit: number; skip: number; }): Promise<UserResponse> => {
@@ -9,6 +9,18 @@ export const userService = {
 
     getUserById: async (userId: string): Promise<UserResponse> => {
         const response = await client.get<UserResponse>(`/users/${userId}`);
+        return response.data;
+    },
+
+    updateUser: async (userData: Partial<User> & { avatarFile?: File }): Promise<UserResponse> => {
+        const response = await client.put<UserResponse>(`/profile`, {
+            ...userData,
+            avatar: userData.avatarFile,
+        }, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        });
         return response.data;
     },
 

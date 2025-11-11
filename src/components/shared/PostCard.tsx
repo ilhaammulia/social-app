@@ -7,6 +7,7 @@ import { userService } from '@/services/user-service';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { authService } from '@/services/auth-service';
+import { processAvatarUrl } from '@/lib/utils';
 
 interface PostCardProps {
     post: Post;
@@ -64,7 +65,7 @@ const PostCard: React.FC<PostCardProps> = ({
             <div className="flex items-start space-x-3">
                 <div className="flex-shrink-0">
                     <Avatar>
-                        <AvatarImage src={post.user?.avatar || ''} alt={post.user?.username || 'User'} />  
+                        <AvatarImage src={processAvatarUrl(post.user?.avatar || '')} alt={post.user?.username || 'User'} />  
                         <AvatarFallback>{post.user?.username?.[0].toUpperCase() || 'U'}</AvatarFallback>
                     </Avatar>
                 </div>

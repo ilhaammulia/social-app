@@ -45,9 +45,11 @@ function Home() {
                     <div className="h-full overflow-y-auto p-2">
                         <ProfileCard
                             user={{
+                                id: user?.id || '',
                                 username: user?.username || '',
-                                avatar: user?.avatar || '',
+                                email: user?.email || '',
                                 bio: user?.bio || '',
+                                avatar: user?.avatar || '',
                                 posts: user?.posts || 0,
                                 following: user?.following || 0,
                                 followers: user?.followers || 0,

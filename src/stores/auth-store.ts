@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { UserWithData } from "@/types"
 import { authService } from "@/services/auth-service"
+import { processAvatarUrl } from "@/lib/utils"
 
 interface AuthState {
     user: UserWithData | null
@@ -24,7 +25,15 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             isLoading: false,
             isAuthenticated: false,
 
-            setUser: (user) => set({ user, isAuthenticated: !!user }),
+            setUser: (user) => {
+                const userWithProcessedAvatar = user ? {
+                    ...user,
+                    avatar: user.avatar ? processAvatarUrl(user.avatar) : user.avatar
+                } : null;
+
+                set({ user: userWithProcessedAvatar, isAuthenticated: !!user })
+            },
+
             setLoading: (loading) => set({ isLoading: loading }),
 
             logout: () => {
@@ -53,14 +62,27 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
                 try {
                     const user = await authService.getCurrentUser()
-                    set({ user: user.data, isAuthenticated: true, isLoading: false })
+                    
+                    const userWithProcessedAvatar = {
+                        ...user.data,
+                        avatar: user.data.avatar ? processAvatarUrl(user.data.avatar) : user.data.avatar
+                    };
+                    
+                    set({ user: userWithProcessedAvatar, isAuthenticated: true, isLoading: false })
                 } catch (error: any) {
                     if (error.response?.status === 401 && error.response?.data?.token) {
                         await get().refreshToken()
                         const newToken = localStorage.getItem("token")
                         if (newToken) {
                             const user = await authService.getCurrentUser()
-                            set({ user: user.data, isAuthenticated: true })
+                            
+                            // Process avatar URL before setting user
+                            const userWithProcessedAvatar = {
+                                ...user.data,
+                                avatar: user.data.avatar ? processAvatarUrl(user.data.avatar) : user.data.avatar
+                            };
+                            
+                            set({ user: userWithProcessedAvatar, isAuthenticated: true })
                         } else {
                             get().logout()
                         }
