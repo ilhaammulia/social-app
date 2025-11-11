@@ -1,5 +1,5 @@
 import { client } from '@/services/api'
-import type { LoginResponse, User } from '@/types'
+import type { LoginResponse, RegisterFormData, RegisterResponse, UserResponse } from '@/types'
 
 export const authService = {
     login: async (username: string, password: string): Promise<LoginResponse> => {
@@ -8,23 +8,40 @@ export const authService = {
             password,
         });
 
-        if (response.data.accessToken && response.data.refreshToken) {
-            localStorage.setItem("accessToken", response.data.accessToken);
-            localStorage.setItem("refreshToken", response.data.refreshToken);
+        if (response.data?.data?.token) {
+            localStorage.setItem("token", response.data.data.token);
         }
 
         return response.data;
     },
 
-    getCurrentUser: async (): Promise<User> => {
-        const response = await client.get<User>("/auth/me");
+    register: async (user: RegisterFormData): Promise<RegisterResponse> => {
+        const response = await client.post<RegisterResponse>("/auth/register", user, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
         return response.data;
     },
 
-    refreshToken: async (token: string): Promise<LoginResponse> => {
-        const response = await client.post<LoginResponse>("/auth/refresh", {
-            refreshToken: token,
+    getCurrentUser: async (): Promise<UserResponse> => {
+        const response = await client.get<UserResponse>("/profile");
+        return response.data;
+    },
+
+    refreshToken: async (username: string, password: string): Promise<LoginResponse> => {
+        const response = await client.post<LoginResponse>("/auth/login", {
+            username,
+            password,
+        }, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
         });
+
+        if (response.data.data.token) {
+            localStorage.setItem("token", response.data.data.token);
+        }
 
         return response.data;
     }

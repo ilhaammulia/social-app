@@ -1,46 +1,35 @@
 
-import { useState, useEffect } from 'react';
-import { userService } from '@/services/user-service'
-import type { User } from '@/types';
+import { useState, useEffect, useCallback } from 'react';
+import { postService } from '@/services/post-service';
+import { useAuthStore } from '@/stores/auth-store';
 
-export const useUser = (userId: string) => {
-    const [user, setUser] = useState<User | null>(null);
+export const useUser = () => {
+    const { user, setUser } = useAuthStore()
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (!userId) {
-            setLoading(false);
-            return;
+    const loadUserPosts = useCallback(async () => {
+        if (!user?.username) {
+            return
         }
 
-        let mounted = true;
+        try {
+            setLoading(true);
+            setError(null);
+            const posts = await postService.getPostsByUser(user.username)
+            setUser({ ...user, posts: posts.data.length })
+            
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to fetch user');
+        } finally {
+            setLoading(false);  
+        }
 
-        const loadUser = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const userData = await userService.getUserById(userId);
-                if (mounted) {
-                    setUser(userData);
-                }
-            } catch (err) {
-                if (mounted) {
-                    setError(err instanceof Error ? err.message : 'Failed to fetch user');
-                }
-            } finally {
-                if (mounted) {
-                    setLoading(false);
-                }
-            }
-        };
+    }, [user?.username]);
+    
+    useEffect(() => {
+        loadUserPosts();
+    }, [loadUserPosts]);
 
-        loadUser();
-
-        return () => {
-            mounted = false;
-        };
-    }, [userId]);
-
-    return { user, loading, error };
+    return { user, loading, error, loadUserPosts };
 };

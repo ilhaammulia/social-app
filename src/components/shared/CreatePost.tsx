@@ -4,13 +4,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { Smile, Image as ImageIcon, X } from 'lucide-react'
+import type { PostFormData } from '@/types'
 
 export interface CreatePostProps {
     currentUser: {
         username: string
         avatar?: string
     }
-    onSubmit?: (content: string, images?: File[]) => void
+    onSubmit?: (postData: PostFormData) => void
     placeholder?: string
 }
 
@@ -34,7 +35,10 @@ const CreatePost: React.FC<CreatePostProps> = ({
 
     const handleSubmit = () => {
         if (content.trim() && charCount <= maxChars && charCount > 0) {
-            onSubmit?.(content.trim(), images)
+            onSubmit?.({
+                content: content.trim(),
+                media: images[0]?.name || null,
+            })
             setContent('')
             setImages([])
             setCharCount(0)

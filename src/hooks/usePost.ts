@@ -1,5 +1,5 @@
 import { postService } from "@/services/post-service";
-import type { Post } from "@/types";
+import type { Post, PostResponse } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 
 export const usePosts = () => {
@@ -12,9 +12,9 @@ export const usePosts = () => {
       setLoading(true);
       setError(null);
       const postsData = await postService.getPosts();
-      setPosts(postsData.posts);
+      setPosts(postsData.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch posts');
+      setError((err as PostResponse).message || 'Failed to fetch posts');
     } finally {
       setLoading(false);
     }
@@ -24,5 +24,5 @@ export const usePosts = () => {
     loadPosts();
   }, [loadPosts]);
 
-  return { posts, loading, error, refetch: loadPosts };
+  return { posts, loading, error, refetch: loadPosts, setError };
 };

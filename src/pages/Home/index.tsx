@@ -1,15 +1,24 @@
 import PostCard from '@/components/shared/PostCard'
 import CreatePost from '@/components/shared/CreatePost'
 import ProfileCard from '@/components/shared/ProfileCard'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
-import { Search } from 'lucide-react'
-import { useAuthStore } from '@/stores/auth-store'
 import { usePosts } from '@/hooks/usePost'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import type { Post, PostFormData, PostResponse } from '@/types'
+import { postService } from '@/services/post-service'
+import { useUser } from '@/hooks/useUser'
+import CommentPostCard from '@/components/shared/CommentPostCard'
 
 function Home() {
-    const { user, logout } = useAuthStore()
-    const { posts, loading, error, refetch } = usePosts()
+    const { user, logout } = useAuth()
+    const { posts, loading, error, refetch, setError } = usePosts()
+    const { loadUserPosts } = useUser()
+    const [currentPost, setCurrentPost] = useState<Post | null>(null)
+    const [showCommentPostCard, setShowCommentPostCard] = useState(false)
+
+    useEffect(() => {
+        loadUserPosts()
+    }, [loadUserPosts])
 
     useEffect(() => {
         refetch()
@@ -17,6 +26,17 @@ function Home() {
 
     if (loading) return <div>Loading...</div>
     if (error) return <div>Error: {error}</div>
+
+    const handleCreatePost = async (postData: PostFormData) => {
+        try {
+            await postService.createPost(postData)
+        } catch (error) {
+            setError((error as PostResponse).message || 'Failed to create post')
+        } finally {
+            refetch()
+            loadUserPosts()
+        }
+    }
 
     return (
         <>
@@ -26,10 +46,10 @@ function Home() {
                         <ProfileCard
                             user={{
                                 username: user?.username || '',
-                                avatar: user?.image || '',
+                                avatar: user?.avatar || '',
                                 bio: user?.bio || '',
                                 posts: user?.posts || 0,
-                                following: user?.followings || 0,
+                                following: user?.following || 0,
                                 followers: user?.followers || 0,
                             }}
                             onLogout={logout}
@@ -42,15 +62,6 @@ function Home() {
                         <div className="p-4">
                             <h1 className="text-xl font-semibold">Home</h1>
                         </div>
-                        <div className="p-4">
-                            <InputGroup>
-                                <InputGroupInput placeholder="Search..." />
-                                <InputGroupAddon>
-                                    <Search />
-                                </InputGroupAddon>
-                                <InputGroupAddon align="inline-end">12 results</InputGroupAddon>
-                            </InputGroup>
-                        </div>
                     </div>
 
                     <div className="h-[calc(100vh-73px)] overflow-y-auto">
@@ -58,17 +69,23 @@ function Home() {
                             <CreatePost
                                 currentUser={{
                                     username: user?.username || '',
-                                    avatar: user?.image || '',
+                                    avatar: user?.avatar || '',
                                 }}
-                                onSubmit={(content) => console.log(content)}
+                                onSubmit={handleCreatePost}
                             />
                         </div>
 
                         <div>
                             {posts.length > 0 &&
                                 posts.map((post) => (
-                                    <PostCard key={post.id} post={post} />
+                                    <PostCard key={post.id} post={post} onComment={() => { setCurrentPost(post); setShowCommentPostCard(true) }} />
                                 ))}
+                                <CommentPostCard post={currentPost} isOpen={showCommentPostCard} onClose={() => setShowCommentPostCard(false)} onReply={() => {}} />
+                            {posts.length === 0 && (
+                                <div className="text-center text-gray-500 py-8">
+                                    No posts yet. Start by creating one!
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

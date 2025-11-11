@@ -1,30 +1,46 @@
 export interface Post {
     id: string;
-    body: string;
-    userId: string;
-    reactions: {
-        likes: number;
-        comments?: number;
-    }
-    mediaUrl?: string;
+    content: string;
+    media_url?: string;
+    comments_count?: number;
+    likes_count?: number;
+    user: {
+        id: string;
+        username: string;
+        avatar: string;
+    };
     isLiked?: boolean;
-    createdAt?: Date;
+    isFollowed?: boolean;
+    created_at?: Date;
 }
 
-export interface PostWithUser extends Post {
-    author: User;
+export interface Comment {
+    id: string;
+    body: string;
+    content?: string;
+    user?: {
+        id: string;
+        username: string;
+        avatar: string;
+    };
+    userId: string;
+    post: Post;
+    created_at?: Date;
 }
 
 export interface User {
-    id: string;
+    id: number;
     username: string;
     email: string;
-    image: string;
-    bio?: string;
+    avatar: string;
+    bio: string;
+    followers: number;
+    following: number;
+    created_at?: Date;
+}
+
+export interface UserWithData extends User {
     posts?: number;
-    followings?: number;
-    followers?: number;
-    createdAt?: Date;
 }
 
 export interface LoginFormData {
@@ -32,41 +48,54 @@ export interface LoginFormData {
     password: string;
 }
 
-export interface UserResponse {
-    limit: number;
-    skip: number;
-    total: number;
-    users: User[];
-}
-
-export interface SingleUserResponse extends User {
-}
-
-
-
-export interface PostResponse {
-    limit: number;
-    skip: number;
-    total: number;
-    posts: Post[];
-}
-
-export interface LoginResponse {
-    id: string;
-    username: string;
+export interface RegisterFormData extends LoginFormData {
     email: string;
-    image: string;
-    accessToken: string;
-    refreshToken: string;
 }
 
-export interface CreateUserRequest {
-    firstName: string;
-    lastName: string;
-    username: string;
-    password: string;
-    email: string;
-    gender: 'male' | 'female';
+export interface PostFormData {
+    content: string;
+    media: string | null;
+}
+
+export interface CommentFormData {
+    post_id: string;
+    content: string;
+}
+
+export interface UserResponse extends Response{
+    data: UserWithData;
+}
+
+
+export interface PostResponse extends Response {
+    data: Post[]
+}
+
+export interface CommentResponse extends Response {
+    data: Comment[]
+}
+
+export interface LoginResponse extends Response {
+    data: {
+        user: User;
+        expiresIn: string;
+        token: string;
+    };
+}
+
+export interface RegisterResponse extends Response {
+    data: {
+        user: User;
+        expiresIn: string;
+        token: string;
+    };
+}
+
+export interface Response {
+    statusCode: number;
+    data: any | null;
+    success: boolean;
+    message: string;
 }
 
 export interface ApiError {

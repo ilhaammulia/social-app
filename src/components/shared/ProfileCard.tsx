@@ -13,13 +13,11 @@ interface ProfileCardProps {
         following: number;
         followers: number;
     };
-    onEditProfile?: () => void;
     onLogout?: () => void;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
     user,
-    onEditProfile,
     onLogout
 }) => {
     return (
@@ -63,15 +61,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
                         <div className="text-gray-500">Followers</div>
                     </div>
                 </div>
-
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onEditProfile}
-                    className="w-full rounded-full"
-                >
-                    Edit Profile
-                </Button>
             </CardContent>
         </Card>
     );

@@ -8,9 +8,11 @@ export const client = axios.create({
 // Request interceptor to add auth token
 client.interceptors.request.use(
     (config) => {
-        config.headers["Content-Type"] = "application/json";
+        if (!config.headers["Content-Type"]) {
+            config.headers["Content-Type"] = "application/json";
+        }
         
-        const token = localStorage.getItem("accessToken");
+        const token = localStorage.getItem("token");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -23,10 +25,9 @@ client.interceptors.request.use(
 client.interceptors.response.use(
     (response) => response,
     (error) => {
-        console.log(error)
         if (error.response?.status === 401) {
-            localStorage.removeItem("accessToken");
-            window.location.href = "/login";
+            localStorage.removeItem("token");
+            window.location.href = "/auth/login";
         }
         return Promise.reject(error);
     }
