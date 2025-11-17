@@ -11,6 +11,7 @@ export const processAvatarUrl = (avatarUrl: string): string => {
     }
     
     if (avatarUrl.startsWith('/')) {
+        avatarUrl = avatarUrl.replace('/api', '');
         return `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${avatarUrl}`;
     }
     

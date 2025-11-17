@@ -53,7 +53,7 @@ export interface RegisterFormData extends LoginFormData {
 
 export interface PostFormData {
     content: string;
-    media: string | null;
+    media: string;
 }
 
 export interface CommentFormData {
@@ -90,11 +90,21 @@ export interface RegisterResponse extends Response {
     };
 }
 
+export interface UploadResponse extends Response {
+    data: Image;
+}
+
 export interface Response {
     statusCode: number;
     data: any | null;
     success: boolean;
     message: string;
+}
+
+export interface Image {
+    filename: string;
+    url: string;
+    size: number;
 }
 
 export interface ApiError {

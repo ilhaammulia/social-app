@@ -11,7 +11,7 @@ export interface CreatePostProps {
         username: string
         avatar?: string
     }
-    onSubmit?: (postData: PostFormData) => void
+    onSubmit?: (postData: PostFormData, images: File[]) => void
     placeholder?: string
 }
 
@@ -37,8 +37,8 @@ const CreatePost: React.FC<CreatePostProps> = ({
         if (content.trim() && charCount <= maxChars && charCount > 0) {
             onSubmit?.({
                 content: content.trim(),
-                media: images[0]?.name || null,
-            })
+                media: '',
+            }, images)
             setContent('')
             setImages([])
             setCharCount(0)

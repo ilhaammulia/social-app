@@ -98,7 +98,7 @@ const PostCard: React.FC<PostCardProps> = ({
                         {post.media_url && (
                             <div className="mt-4 rounded-lg overflow-hidden">
                                 <img
-                                    src={post.media_url}
+                                    src={processAvatarUrl(post.media_url || '')}
                                     alt="Post image"
                                     className="w-full h-auto object-cover max-h-96 rounded-lg"
                                 />

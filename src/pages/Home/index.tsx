@@ -8,6 +8,7 @@ import type { Post, PostFormData, PostResponse } from '@/types'
 import { postService } from '@/services/post-service'
 import { useUser } from '@/hooks/useUser'
 import CommentPostCard from '@/components/shared/CommentPostCard'
+import { uploadService } from '@/services/upload-service'
 
 function Home() {
     const { user, logout } = useAuth()
@@ -27,8 +28,12 @@ function Home() {
     if (loading) return <div>Loading...</div>
     if (error) return <div>Error: {error}</div>
 
-    const handleCreatePost = async (postData: PostFormData) => {
+    const handleCreatePost = async (postData: PostFormData, images: File[]) => {
         try {
+            if (images.length > 0) {
+                const media = await uploadService.upload(images[0])
+                postData.media = media.data?.url || ''
+            }
             await postService.createPost(postData)
         } catch (error) {
             setError((error as PostResponse).message || 'Failed to create post')
